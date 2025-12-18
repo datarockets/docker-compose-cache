@@ -1,0 +1,16 @@
+{
+  "dockerComposeFile": "../compose.yml",
+  "runServices": ["dev"],
+  "service": "dev",
+  "shutdownAction": "none",
+  "workspaceFolder": "/home/dev/action",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "EditorConfig.EditorConfig",
+        "esbenp.prettier-vscode",
+        "sourcegraph.amp"
+      ]
+    }
+  }
+}

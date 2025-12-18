@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+cd "$(dirname "$0")/.."
+
+if [[ -f ~/.is_container ]]; then
+    npm $@
+else
+    docker compose --progress quiet run --quiet --rm ${COMPOSE_ARGS} action \
+		bin/npm $@
+fi

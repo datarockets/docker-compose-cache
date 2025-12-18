@@ -1,0 +1,48 @@
+if [[ ! "${BASH_VERSION}" =~ ^4\. ]] && [[ ! "${BASH_VERSION}" =~ ^5\. ]]; then
+	echo "Bash version 4 or 5 required. Current version is ${BASH_VERSION}" 1>&2
+	exit 250
+fi
+
+# don't load core file multiple times
+if [[ -z "$BINLIB_CORE" ]]; then
+	BINLIB_CORE=loaded
+	declare -A BINLIB_INCLUDE_CACHE
+
+	echo_debug() {
+		if [[ -n "${DEBUG}" ]]; then
+			echo "${@}"
+		fi
+	}
+
+	echo_error() {
+		echo $@ 1>&2
+	}
+
+	echo_warning() {
+		[[ -n "${DISABLE_WARNINGS}" ]] || echo "Warning: ${@}"
+	}
+
+	cat_error() {
+		cat < /dev/stdin 1>&2
+	}
+
+	realpath() {
+		echo "$(cd $(dirname $1); pwd)/$(basename $1)"
+	}
+
+	include() {
+		local path_to_include=$(realpath $(dirname "${BASH_SOURCE[1]}")/${1})
+
+		if [[ -z "${BINLIB_INCLUDE_CACHE[$path_to_include]}" ]]; then
+			if [[ -f $path_to_include ]]; then
+				BINLIB_INCLUDE_CACHE[$path_to_include]=true
+				source $path_to_include
+			else
+				echo_error "Cannot include $path_to_include: file not found"
+				exit 1
+			fi
+		fi
+	}
+
+	echo_debug " * BINLIB/core is loaded"
+fi

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -e
+cd "$(dirname "$0")/.."
+source bin/lib/containers/ensure_service_started
+
+ensure_service_started dev
+docker compose exec -it -e TERM dev zsh -ic "amp $@"

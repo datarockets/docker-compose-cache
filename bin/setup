@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -e
+cd "$(dirname "$0")/.."
+
+if [[ -n "${CI}" ]]; then
+	export COMPOSE_FILE="compose.yml:compose.ci.yml"
+fi
+
+# UID is not an env variable but a shell variable. We export it so that docker compose
+# can use it in order to not have permission issues with mounted volumes.
+export UID
+
+docker compose build
+
+if [[ -z "${CI}" ]]; then
+	docker compose build dev
+fi

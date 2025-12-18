@@ -1,0 +1,12 @@
+source "$(dirname ${BASH_SOURCE})/../core"
+
+# Checks if docker compose service is running and starts it if not.
+# Example:
+#   ensure_service_started "dev"
+ensure_service_started() {
+	service=$1
+	container_id=$(docker compose ps -q --services ${service})
+	if [[ -z "$container_id" ]]; then
+		docker compose up -d ${service}
+	fi
+}

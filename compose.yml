@@ -1,0 +1,31 @@
+name: docker-compose-cache
+
+services:
+  action:
+    build:
+      context: .
+      args:
+        HOST_UID: ${UID:-1000}
+    volumes:
+      - ${HOST_PROJECT_PATH:-.}:/home/node/action
+      - node_modules:/home/node/action/node_modules
+  dev:
+    profiles: ["dev"]
+    build:
+      dockerfile: .devcontainer/Dockerfile
+      args:
+        HOST_UID: ${UID:-1000}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - devcontainer_local:/home/dev/.local
+      - devcontainer_claude:/home/dev/.claude
+      - .:/home/dev/action
+      - node_modules:/home/dev/action/node_modules
+    environment:
+      HOST_PROJECT_PATH: ${PWD}
+    working_dir: /home/dev/action
+
+volumes:
+  node_modules:
+  devcontainer_local:
+  devcontainer_claude:
