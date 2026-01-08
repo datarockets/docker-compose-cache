@@ -1,11 +1,17 @@
 {
+  "scripts": {
+    "build": "ncc build src/main.ts -o dist/main && ncc build src/post.ts -o dist/post",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write ."
+  },
   "dependencies": {
-    "@actions/cache": "^4.0.3",
+    "@actions/cache": "^5.0.1",
     "@actions/core": "^2.0.1",
     "@actions/exec": "^2.0.0"
   },
   "devDependencies": {
     "@types/node": "^25.0.3",
+    "@vercel/ncc": "^0.38.3",
     "prettier": "^3.7.4",
     "typescript": "^5.9.3"
   }

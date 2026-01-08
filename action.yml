@@ -1,0 +1,24 @@
+name: Docker Compose Cache
+description: Cache Docker Compose volumes and enable image layer caching
+author: datarockets
+
+inputs:
+  volumes:
+    description: Volume to hash mappings, one per line.
+    required: false
+  compose-files:
+    description: Compose files to use, one per line.
+    required: false
+  cache-key-prefix:
+    description: Prefix for cache keys
+    required: false
+    default: docker-compose-cache
+
+runs:
+  using: node24
+  main: dist/main/index.js
+  post: dist/post/index.js
+
+branding:
+  icon: database
+  color: blue

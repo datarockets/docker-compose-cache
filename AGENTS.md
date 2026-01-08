@@ -7,8 +7,9 @@ While agent is running in devcontainer, everything related to the code is happen
 
 ## Formatting
 
-After modifying any TypeScript, JavaScript, JSON, or Markdown files, run:
+After modifying any TypeScript, JavaScript, JSON, or Markdown files typecheck and fix issues and format the code:
 
 ```bash
-bin/npx prettier --write <relative paths to files>
+bin/npm run typecheck
+bin/npm run format
 ```
