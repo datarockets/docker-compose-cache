@@ -1,5 +1,20 @@
+import * as cache from "@actions/cache";
 import * as core from "@actions/core";
 import * as exec from "@actions/exec";
+import * as os from "os";
+
+export interface CacheKey {
+  key: string;
+  restoreKeys: string[];
+}
+
+export function generateCacheKey(prefix: string, volumeName: string, hash: string): CacheKey {
+  const platform = os.platform();
+  const key = `${prefix}-${volumeName}-${platform}-${hash}`;
+  const restoreKeys = [`${prefix}-${volumeName}-${platform}-`];
+
+  return { key, restoreKeys };
+}
 
 // ACTIONS_CACHE_URL and ACTIONS_RUNTIME_TOKEN are available to actions but not to
 // subsequent steps. Export them so Docker's GHA cache backend works in later steps.
@@ -39,4 +54,37 @@ async function isBuildxInstalled(): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+export async function restoreCache(
+  key: string,
+  restoreKeys: string[],
+  path: string,
+): Promise<string | undefined> {
+  try {
+    return await cache.restoreCache([path], key, restoreKeys);
+  } catch (error) {
+    core.warning(`Failed to restore cache: ${error}`);
+    return undefined;
+  }
+}
+
+export async function saveCache(key: string, path: string): Promise<void> {
+  try {
+    await cache.saveCache([path], key);
+  } catch (error) {
+    core.warning(`Failed to save cache: ${error}`);
+  }
+}
+
+export function saveState<T>(name: string, value: T): void {
+  core.saveState(name, JSON.stringify(value));
+}
+
+export function getState<T>(name: string): T | undefined {
+  const value = core.getState(name);
+  if (!value) {
+    return undefined;
+  }
+  return JSON.parse(value) as T;
 }

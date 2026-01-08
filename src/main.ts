@@ -1,12 +1,24 @@
 import * as actions from "./actions";
-
-async function restoreDockerVolumes(): Promise<void> {
-  // TODO: implement
-}
+import * as compose from "./compose";
+import * as inputs from "./inputs";
+import * as volumes from "./volumes";
 
 async function main(): Promise<void> {
   await actions.setupEnvironmentForImagesCaching();
-  await restoreDockerVolumes();
+
+  const cachedVolumes = inputs.volumes();
+  if (cachedVolumes.length === 0) {
+    return;
+  }
+  const composeFiles = inputs.composeFiles();
+  const result = await volumes.restoreVolumes(
+    await compose.projectName(composeFiles),
+    cachedVolumes,
+    inputs.cacheKeyPrefix(),
+  );
+
+  actions.saveState<volumes.VolumeRestoreResult[]>("results", result);
+  actions.saveState<string[]>("composeFiles", composeFiles);
 }
 
 main();
