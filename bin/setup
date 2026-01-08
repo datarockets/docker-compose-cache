@@ -11,6 +11,7 @@ fi
 export UID
 
 docker compose build
+bin/npm install
 
 if [[ -z "${CI}" ]]; then
 	docker compose build dev
