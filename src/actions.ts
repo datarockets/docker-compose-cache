@@ -16,22 +16,42 @@ export function generateCacheKey(prefix: string, volumeName: string, hash: strin
   return { key, restoreKeys };
 }
 
-// ACTIONS_CACHE_URL and ACTIONS_RUNTIME_TOKEN are available to actions but not to
+// Cache-related environment variables are available to actions but not to
 // subsequent steps. Export them so Docker's GHA cache backend works in later steps.
+// GitHub Actions has two cache API versions:
+// - v1: uses ACTIONS_CACHE_URL
+// - v2: uses ACTIONS_RESULTS_URL
 export async function setupEnvironmentForImagesCaching(): Promise<void> {
   const cacheUrl = process.env.ACTIONS_CACHE_URL;
+  const resultsUrl = process.env.ACTIONS_RESULTS_URL;
   const runtimeToken = process.env.ACTIONS_RUNTIME_TOKEN;
 
+  // Export both URLs for compatibility with different buildx/compose versions:
+  // - v1 API: uses ACTIONS_CACHE_URL
+  // - v2 API: uses ACTIONS_RESULTS_URL (required since April 2025)
   if (cacheUrl) {
     core.exportVariable("ACTIONS_CACHE_URL", cacheUrl);
-  } else {
-    core.warning("ACTIONS_CACHE_URL is not available. Image layer caching may not work.");
+  }
+  if (resultsUrl) {
+    core.exportVariable("ACTIONS_RESULTS_URL", resultsUrl);
+  }
+
+  if (!cacheUrl && !resultsUrl) {
+    core.warning(
+      "Neither ACTIONS_CACHE_URL nor ACTIONS_RESULTS_URL is available. Image layer caching may not work.",
+    );
   }
 
   if (runtimeToken) {
     core.exportVariable("ACTIONS_RUNTIME_TOKEN", runtimeToken);
   } else {
     core.warning("ACTIONS_RUNTIME_TOKEN is not available. Image layer caching may not work.");
+  }
+
+  // Also export ACTIONS_CACHE_SERVICE_V2 if present - this tells buildx to use v2 API
+  const cacheServiceV2 = process.env.ACTIONS_CACHE_SERVICE_V2;
+  if (cacheServiceV2) {
+    core.exportVariable("ACTIONS_CACHE_SERVICE_V2", cacheServiceV2);
   }
 
   const buildxInstalled = await isBuildxInstalled();

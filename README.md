@@ -52,8 +52,9 @@ We want to cache image layers and volumes with dependencies.
 ```yml
 steps:
   - uses: actions/checkout@v4
-  # buildx is required for image layers caching to work:
+  # buildx and newer version of compose are required for image layers caching to work:
   - uses: docker/setup-buildx-action@v3
+  - uses: docker/setup-compose-action@v1
   - uses: datarockets/docker-compose-cache@v1
     with:
       volumes: |
