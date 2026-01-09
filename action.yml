@@ -1,4 +1,4 @@
-name: Docker Compose Cache
+name: Docker Compose Volumes Cache
 description: Cache Docker Compose volumes and enable image layer caching
 author: datarockets
 
