@@ -86,3 +86,7 @@ fi
 docker compose build
 # ...
 ```
+
+## Alternatives
+
+I found out that there's an existing "Docker Compose Cache" [seijikohara/docker-compose-cache-action](https://github.com/seijikohara/docker-compose-cache-action) only on release. I think it takes a bit different approach by parsing compose files and doesn't cache volumes.
